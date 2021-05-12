@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -30,9 +32,10 @@ namespace reservation_booking_system.Controllers
                 return View("Index",model);
             }
             ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
-            var admindata = reservationSystemDBEntities.Admins.Where(x => x.Email == model.Email).Select(x => new { x.Name, x.ID,x.HashKey,x.HashedPassword }).FirstOrDefault();
-            var clientdata = reservationSystemDBEntities.Clients.Where(x => x.Email == model.Email).FirstOrDefault();
+            var admindata = reservationSystemDBEntities.Admins.Where(x => x.Email == model.Email && x.Status == 1).Select(x => new { x.Name, x.ID,x.HashKey,x.HashedPassword }).FirstOrDefault();
+            var clientdata = reservationSystemDBEntities.Clients.Where(x => x.Email == model.Email || x.UserName == model.Email && x.Status == 1).Select(x => new { x.Name,x.UserName, x.ID, x.HashedKey, x.HashedPassword }).FirstOrDefault();
 
+            // admin side
             if (!(admindata == null))
             {
                 var HashedPassword = HMACSHA256(model.Password, admindata.HashKey);
@@ -70,11 +73,41 @@ namespace reservation_booking_system.Controllers
                 }
               
             }
-            else if(!(clientdata == null)) 
+
+            // client side
+            else if (!(clientdata == null)) 
             {
-                FormsAuthentication.SetAuthCookie(clientdata.ID.ToString(), false);
-                // role = client
-                return RedirectToAction("Index", "Home");
+                var HashedPassword = HMACSHA256(model.Password, clientdata.HashedKey);
+                if (HashedPassword == clientdata.HashedPassword)
+                {
+                    // set id, name, role, accessLevel
+                    UserData userData = new UserData
+                    {
+                        Name = clientdata.Name,
+                        Role = "client",
+                        AccessLevel = 1
+                    };
+                    var userdata = String.Join(",", userData.Name, userData.Role, userData.AccessLevel);
+                    FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
+                        1,
+                        clientdata.UserName,
+                        DateTime.Now,
+                        DateTime.Now.AddDays(20),
+                        false,
+                        userdata
+                        );
+                    // Encrypt the ticket.
+                    string encTicket = FormsAuthentication.Encrypt(ticket);
+
+                    // Create the cookie.
+                    Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Incorrect email or password");
+                    return View();
+                }
             }
             else
             {
@@ -83,42 +116,89 @@ namespace reservation_booking_system.Controllers
             }
             
         }
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public ActionResult RegisterClient(RegisterViewModel model)
+        public ActionResult Register()
         {
-            ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
-            
-            Client client = new Client
-            {
-                Email = "fege",
-                //var i = reservationSystemDBEntities.SaveChanges();
-        };
 
             return View();
         }
-       
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult RegisterAdmin(RegisterViewModel model)
+        public ActionResult Register(RegisterViewModel model)
         {
             ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
-            var rnd = GenerateRandomString(25);
-            Admin admin = new Admin
+            var cldata = reservationSystemDBEntities.Clients.Where(x => x.Email == model.Email || x.UserName == model.userName).FirstOrDefault();
+            if (cldata == null)
             {
-                Email = model.Email,
-                HashedPassword = HMACSHA256(model.Password, rnd),
-                HashKey = rnd,
-                Name = model.Name,
-                ContactNumber = model.Contact
 
-            };
-            reservationSystemDBEntities.Admins.Add(admin);
+                var rnd = GenerateRandomString(25);
+                Client client = new Client
+                {
+                    UserName = model.userName,
+                    Name = model.Name,
+                    Email = model.Email,
+                    HashedPassword = HMACSHA256(model.Password, rnd),
+                    HashedKey = rnd,
+                    ContactNumber = model.Contact,
+                    CreatedBy = model.userName,
+                    CreatedTime = DateTime.Now.ToString(),
+                    UpdatedBy = model.userName,
+                    UpdatedTime = DateTime.Now.ToString(),
+                    Status = 1
 
+                };
+                reservationSystemDBEntities.Clients.Add(client);
+                reservationSystemDBEntities.SaveChanges();
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                ModelState.AddModelError("", "User Name or Email Exists");
+                return View();
+            }
+        }
+
+        public ActionResult RegisterAdmin() 
+        {
             return View();
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult RegisterAdmin(RegisterAdViewModel model)
+        {
+
+            ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
+            var amdata = reservationSystemDBEntities.Admins.Where(x => x.Email == model.Email).FirstOrDefault();
+            if (amdata == null)
+            {
+                
+                var rnd = GenerateRandomString(25);
+                Admin admin = new Admin
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    HashedPassword = HMACSHA256(model.Password, rnd),
+                    HashKey = rnd,
+                    ContactNumber = model.Contact,
+                    CreatedTime = DateTime.Now.ToString(),
+                    UpdatedTime = DateTime.Now.ToString(),
+                    Status = 1
+                    
+                };
+                reservationSystemDBEntities.Admins.Add(admin);
+                reservationSystemDBEntities.SaveChanges();
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Email Exists");
+                return View();
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Logoff()
@@ -126,6 +206,45 @@ namespace reservation_booking_system.Controllers
             FormsAuthentication.SignOut();
             Session.Abandon();
             return RedirectToAction("Index","Home");
+        }
+
+        [AcceptVerbs("Get","Post")]
+        [AllowAnonymous]
+        public JsonResult IsEmailUsed(string email)
+        {
+            var data = "";
+            using (var aa = new ReservationSystemDBEntities())
+            {
+                data = aa.Database.SqlQuery<string>("select Email from Admin ad where ad.Email = @email Union select Email from Client ct where ct.Email = @email", new SqlParameter("@email", email)).FirstOrDefault();
+            }
+            if (data == null)
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+            }
+            
+        }
+
+        [AcceptVerbs("Get", "Post")]
+        [AllowAnonymous]
+        public JsonResult IsUserNameUsed(string username)
+        {
+
+            ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
+            var ctdata = reservationSystemDBEntities.Clients.Where(x => x.UserName == username).FirstOrDefault();
+
+            if (ctdata == null)
+            {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+            }
+
         }
 
         [Authorize]

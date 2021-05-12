@@ -4,9 +4,12 @@
 }
 else
 {
-    <ul class="navbar-item flex-row">
-        <li class="nav-item align-self-center" style="height: 42px;">
-            <button class="btn btn-info mb-4 mr-4 btn-lg" type="button" onclick="location.href='@Url.Action("Login", "Account")'">Login</button>
-        </li>
-    </ul>
+<ul class="navbar-item flex-row">
+    <li class="nav-item align-self-center" style="height: 42px;">
+        <button class="btn btn-outline-secondary mb-4 mr-4 btn-lg" type="button" onclick="location.href='@Url.Action("Login", "Account")'">Login</button>
+    </li>
+    <li class="nav-item align-self-center" style="height: 42px;">
+        <button class="btn btn-outline-secondary mb-4 mr-4 btn-lg" type="button" onclick="location.href='@Url.Action("Register", "Account")'">Register</button>
+    </li>
+</ul>
 }
