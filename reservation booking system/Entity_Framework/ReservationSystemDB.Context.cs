@@ -26,7 +26,7 @@ namespace reservation_booking_system.Entity_Framework
         }
     
         public virtual DbSet<Admin> Admins { get; set; }
-        public virtual DbSet<Client> Clients { get; set; }
         public virtual DbSet<Event> Events { get; set; }
+        public virtual DbSet<Client> Clients { get; set; }
     }
 }

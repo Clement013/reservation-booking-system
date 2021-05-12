@@ -24,7 +24,6 @@ namespace reservation_booking_system.Entity_Framework
         public string Name { get; set; }
         public Nullable<int> ContactNumber { get; set; }
         public string Email { get; set; }
-        public Nullable<int> CreatedBy { get; set; }
         public string CreatedTime { get; set; }
         public Nullable<int> UpdatedBy { get; set; }
         public string UpdatedTime { get; set; }

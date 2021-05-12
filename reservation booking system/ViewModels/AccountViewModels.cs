@@ -38,7 +38,7 @@ namespace reservation_booking_system.ViewModels
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Contact")]
-        public string Contact { get; set; }
+        public int Contact { get; set; }
     }
 
     public class UserData

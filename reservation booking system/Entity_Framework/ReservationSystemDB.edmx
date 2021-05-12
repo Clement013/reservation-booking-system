@@ -15,7 +15,6 @@
           <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="HashKey" Type="varchar" MaxLength="25" />
           <Property Name="HashedPassword" Type="varchar" MaxLength="255" Nullable="false" />
-          <Property Name="CreatedBy" Type="int" />
           <Property Name="CreatedTime" Type="varchar" MaxLength="50" />
           <Property Name="UpdatedBy" Type="int" />
           <Property Name="UpdatedTime" Type="varchar" MaxLength="50" />
@@ -27,14 +26,15 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="ContactNumber" Type="int" />
           <Property Name="Email" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="HashedKey" Type="varchar" MaxLength="25" />
           <Property Name="HashedPassword" Type="varchar" MaxLength="255" Nullable="false" />
-          <Property Name="CreatedBy" Type="int" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="255" />
           <Property Name="CreatedTime" Type="varchar" MaxLength="50" />
-          <Property Name="UpdatedBy" Type="int" />
+          <Property Name="UpdatedBy" Type="varchar" MaxLength="255" />
           <Property Name="UpdatedTime" Type="varchar" MaxLength="50" />
           <Property Name="Status" Type="int" />
           <Property Name="Remarks" Type="varchar" MaxLength="255" />
@@ -93,19 +93,19 @@
             <End Role="Client" EntitySet="Client" />
             <End Role="Event" EntitySet="Event" />
           </AssociationSet>
-          </EntityContainer>
+        </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ReservationSystemDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="ReservationSystemDBEntities" annotation:LazyLoadingEnabled="true" >
           <EntitySet Name="Admins" EntityType="ReservationSystemDBModel.Admin" />
-          <EntitySet Name="Clients" EntityType="ReservationSystemDBModel.Client" />
           <EntitySet Name="Events" EntityType="ReservationSystemDBModel.Event" />
           <AssociationSet Name="FK__Event__AdminID__403A8C7D" Association="ReservationSystemDBModel.FK__Event__AdminID__403A8C7D">
             <End Role="Admin" EntitySet="Admins" />
             <End Role="Event" EntitySet="Events" />
           </AssociationSet>
+          <EntitySet Name="Clients" EntityType="ReservationSystemDBModel.Client" />
           <AssociationSet Name="FK__Event__ClientID__3F466844" Association="ReservationSystemDBModel.FK__Event__ClientID__3F466844">
             <End Role="Client" EntitySet="Clients" />
             <End Role="Event" EntitySet="Events" />
@@ -120,31 +120,12 @@
           <Property Name="ContactNumber" Type="Int32" />
           <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Events" Relationship="ReservationSystemDBModel.FK__Event__AdminID__403A8C7D" FromRole="Admin" ToRole="Event" />
-          <Property Name="CreatedBy" Type="Int32" />
           <Property Name="CreatedTime" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="UpdatedBy" Type="Int32" />
           <Property Name="UpdatedTime" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Status" Type="Int32" />
           <Property Name="Remarks" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="HashKey" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
-          <Property Name="HashedPassword" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="Client">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="ContactNumber" Type="Int32" />
-          <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Events" Relationship="ReservationSystemDBModel.FK__Event__ClientID__3F466844" FromRole="Client" ToRole="Event" />
-          <Property Name="CreatedBy" Type="Int32" />
-          <Property Name="CreatedTime" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="UpdatedBy" Type="Int32" />
-          <Property Name="UpdatedTime" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Status" Type="Int32" />
-          <Property Name="Remarks" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="HashedKey" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
           <Property Name="HashedPassword" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Event">
@@ -158,7 +139,6 @@
           <Property Name="ClientID" Type="Int32" />
           <Property Name="AdminID" Type="Int32" />
           <NavigationProperty Name="Admin" Relationship="ReservationSystemDBModel.FK__Event__AdminID__403A8C7D" FromRole="Event" ToRole="Admin" />
-          <NavigationProperty Name="Client" Relationship="ReservationSystemDBModel.FK__Event__ClientID__3F466844" FromRole="Event" ToRole="Client" />
           <Property Name="CreatedBy" Type="Int32" />
           <Property Name="CreatedTime" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="UpdatedBy" Type="Int32" />
@@ -166,6 +146,7 @@
           <Property Name="Status" Type="Int32" />
           <Property Name="Remarks" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Client" Relationship="ReservationSystemDBModel.FK__Event__ClientID__3F466844" FromRole="Event" ToRole="Client" />
         </EntityType>
         <Association Name="FK__Event__AdminID__403A8C7D">
           <End Type="ReservationSystemDBModel.Admin" Role="Admin" Multiplicity="0..1" />
@@ -179,6 +160,25 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Client">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="ContactNumber" Type="Int32" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="HashedKey" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="HashedPassword" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedTime" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="UpdatedTime" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="Int32" />
+          <Property Name="Remarks" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Events" Relationship="ReservationSystemDBModel.FK__Event__ClientID__3F466844" FromRole="Client" ToRole="Event" />
+        </EntityType>
         <Association Name="FK__Event__ClientID__3F466844">
           <End Type="ReservationSystemDBModel.Client" Role="Client" Multiplicity="0..1" />
           <End Type="ReservationSystemDBModel.Event" Role="Event" Multiplicity="*" />
@@ -207,25 +207,6 @@
                 <ScalarProperty Name="UpdatedTime" ColumnName="UpdatedTime" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
                 <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="ContactNumber" ColumnName="ContactNumber" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Clients">
-            <EntityTypeMapping TypeName="ReservationSystemDBModel.Client">
-              <MappingFragment StoreEntitySet="Client">
-                <ScalarProperty Name="HashedPassword" ColumnName="HashedPassword" />
-                <ScalarProperty Name="HashedKey" ColumnName="HashedKey" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="UpdatedTime" ColumnName="UpdatedTime" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="ContactNumber" ColumnName="ContactNumber" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -248,6 +229,25 @@
                 <ScalarProperty Name="EndTime" ColumnName="EndTime" />
                 <ScalarProperty Name="FromTime" ColumnName="FromTime" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Clients">
+            <EntityTypeMapping TypeName="ReservationSystemDBModel.Client">
+              <MappingFragment StoreEntitySet="Client">
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="UpdatedTime" ColumnName="UpdatedTime" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="HashedPassword" ColumnName="HashedPassword" />
+                <ScalarProperty Name="HashedKey" ColumnName="HashedKey" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="ContactNumber" ColumnName="ContactNumber" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

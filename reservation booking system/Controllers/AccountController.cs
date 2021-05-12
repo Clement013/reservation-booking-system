@@ -110,9 +110,13 @@ namespace reservation_booking_system.Controllers
             {
                 Email = model.Email,
                 HashedPassword = HMACSHA256(model.Password, rnd),
-                HashKey = rnd
+                HashKey = rnd,
+                Name = model.Name,
+                ContactNumber = model.Contact
+
             };
-            
+            reservationSystemDBEntities.Admins.Add(admin);
+
             return View();
         }
         [HttpPost]
@@ -130,7 +134,6 @@ namespace reservation_booking_system.Controllers
             FormsIdentity user = (FormsIdentity) User.Identity;
             var struserdata = user.Ticket.UserData;
             var userdata = UserDatastr(struserdata);
-            
             //FormsAuthenticationTicket ticket = FormsAuthentication.Decrypt(authCookie.Value);
             return PartialView("_HeaderLogin", userdata);
         }
