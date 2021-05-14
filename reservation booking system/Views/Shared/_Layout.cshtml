@@ -1,5 +1,4 @@
-﻿@*@model reservation_booking_system.ViewModels.UserAdminViewModel*@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -17,6 +16,9 @@
     <link href="/Content/plugins/flatpickr/flatpickr.css" rel="stylesheet" type="text/css">
     <link href="/Content/plugins/flatpickr/custom-flatpickr.css" rel="stylesheet" type="text/css">
     <link href="/Content/assets/css/forms/theme-checkbox-radio.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/sweetalerts/sweetalert.css" rel="stylesheet" />
+    <link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
     <!-- END PAGE LEVEL STYLE -->
 
 </head>
@@ -37,7 +39,7 @@
                         </a>
                     </li>
                     <li class="nav-item theme-text">
-                        <a href="index.html" class="nav-link"> CORK </a>
+                        <a href="index.html" class="nav-link">Reservation Booking System</a>
                     </li>
                 </ul>
 
@@ -73,26 +75,6 @@
                 </ul>
             </nav>
         </div>
-        <!--  END TOPBAR  -->
-        @*<div class="navbar navbar-inverse navbar-fixed-top">
-                <div class="container">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                    </div>
-                    <div class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav">
-                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                            <li>@Html.ActionLink("About", "About", "Home")</li>
-                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>*@
         <div class="container body-content">
             @RenderBody()
             <hr />
@@ -111,6 +93,9 @@
     <script src="/Content/assets/js/app.js"></script>
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/moment.js"></script>
+    <script src="~/Content/plugins/sweetalerts/promise-polyfill.js"></script>
+
     <script>
         $(document).ready(function () {
             App.init();
@@ -122,9 +107,558 @@
     <script src="/Content/plugins/fullcalendar/moment.min.js"></script>
     <script src="/Content/plugins/flatpickr/flatpickr.js"></script>
     <script src="/Content/plugins/fullcalendar/fullcalendar.min.js"></script>
+    <script src="~/Content/plugins/sweetalerts/sweetalert2.min.js"></script>
+    <script src="~/Content/plugins/sweetalerts/custom-sweetalert.js"></script>
+    <script src="~/Content/plugins/select2/select2.min.js"></script>
+   
     <!-- END PAGE LEVEL SCRIPTS -->
-    <!--  BEGIN CUSTOM SCRIPTS FILE  -->
-    <script src="/Content/plugins/fullcalendar/custom-fullcalendar.advance.js"></script>
-    <!--  END CUSTOM SCRIPTS FILE  -->
+    <script>
+        $(document).ready(function () {
+
+            // Get the modal
+            var modal = document.getElementById("addEventsModal");
+
+           // Get the button that opens the modal
+            var btn = document.getElementById("myBtn");
+
+            // Get the Add Event button
+            var addEvent = document.getElementById("add-e");
+
+            // Get the Edit Event button
+            var editEvent = document.getElementById("edit-event");
+
+            // Get the Discard Modal button
+            var discardModal = document.querySelectorAll("[data-dismiss='modal']")[0];
+
+            // Get the Add Event button
+            var addEventTitle = document.getElementsByClassName("add-event-title")[0];
+
+            // Get the Edit Event button
+            var editEventTitle = document.getElementsByClassName("edit-event-title")[0];
+
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+
+            // Get the all <input> elements insdie the modal
+            var input = document.querySelectorAll('input[type="text"]');
+            var radioInput = document.querySelectorAll('input[type="radio"]');
+
+            // Get the all <textarea> elements insdie the modal
+            var textarea = document.getElementsByTagName('textarea');
+
+            // Create BackDrop ( Overlay ) Element
+            function createBackdropElement() {
+                var btn = document.createElement("div");
+                btn.setAttribute('class', 'modal-backdrop fade show')
+                document.body.appendChild(btn);
+            }
+
+            // Reset radio buttons
+            function clearRadioGroup(GroupName) {
+                var ele = document.getElementsByName(GroupName);
+                for (var i = 0; i < ele.length; i++) ele[i].checked = false;
+            }
+            //Reset select
+            function clearselection() {
+                $('#client-data option').prop('selected', function () {
+                    return this.defaultSelected;
+                });
+            }
+
+            // Reset Modal Data on when modal gets closed
+            function modalResetData() {
+                modal.style.display = "none";
+                for (i = 0; i < input.length; i++) {
+                    input[i].value = '';
+                }
+                for (j = 0; j < textarea.length; j++) {
+                    textarea[j].value = '';
+                    i
+                }
+                clearselection();
+                // Get Modal Backdrop
+                var getModalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+                document.body.removeChild(getModalBackdrop)
+            }
+
+            // When the user clicks on the button, open the modal
+            btn.onclick = function () {
+                @if (Request.IsAuthenticated) {
+                    <text>
+                        modal.style.display = "block";
+                        addEvent.style.display = 'block';
+                        editEvent.style.display = 'none';
+                        addEventTitle.style.display = 'block';
+                        editEventTitle.style.display = 'none';
+                        document.getElementsByTagName('body')[0].style.overflow = 'hidden';
+                        createBackdropElement();
+                        enableDatePicker();
+                     </text>
+                }
+                else{
+                    <text>
+                        swal({
+                            title: 'Authentication Failed',
+                            text: "Please Login first",
+                            type: 'error',
+                            padding: '2em'
+                        }).then(() => {
+                            window.location.href = "/account/login";
+                        })
+                    </text>
+                }
+            }
+            // Clear Data and close the modal when the user clicks on Discard button
+            discardModal.onclick = function () {
+                modalResetData();
+                document.getElementsByTagName('body')[0].removeAttribute('style');
+            }
+
+            // Clear Data and close the modal when the user clicks on <span> (x).
+            span.onclick = function () {
+                modalResetData();
+                document.getElementsByTagName('body')[0].removeAttribute('style');
+            }
+
+            // Clear Data and close the modal when the user clicks anywhere outside of the modal.
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modalResetData();
+                    document.getElementsByTagName('body')[0].removeAttribute('style');
+                }
+            }
+
+            newDate = new Date()
+            monthArray = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+
+            function getDynamicMonth(monthOrder) {
+                var getNumericMonth = parseInt(monthArray[newDate.getMonth()]);
+                var getNumericMonthInc = parseInt(monthArray[newDate.getMonth()]) + 1;
+                var getNumericMonthDec = parseInt(monthArray[newDate.getMonth()]) - 1;
+
+                if (monthOrder === 'default') {
+
+                    if (getNumericMonth < 10) {
+                        return '0' + getNumericMonth;
+                    } else if (getNumericMonth >= 10) {
+                        return getNumericMonth;
+                    }
+
+                } else if (monthOrder === 'inc') {
+
+                    if (getNumericMonthInc < 10) {
+                        return '0' + getNumericMonthInc;
+                    } else if (getNumericMonthInc >= 10) {
+                        return getNumericMonthInc;
+                    }
+
+                } else if (monthOrder === 'dec') {
+
+                    if (getNumericMonthDec < 10) {
+                        return '0' + getNumericMonthDec;
+                    } else if (getNumericMonthDec >= 10) {
+                        return getNumericMonthDec;
+                    }
+                }
+            }
+
+            /* initialize the calendar
+            -----------------------------------------------------------------*/
+            var calendar = $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'listMonth,agendaWeek,agendaDay'
+                },
+
+                minTime: "08:00:00", // hidden before 8 am
+                maxTime: "18:00:00", // hidden after 6 pm
+                hiddenDays: [0, 6], // hidden Sunday and Saturday
+                slotLabelInterval: 30,
+                slotLabelFormat: 'h(:mm)a',
+                businessHours:
+                    // days of week. an array of zero-based day of week integers (0=Sunday)
+                    [
+                        {
+                            dow: [1, 2, 3, 4, 5], // Monday - Thursday
+                            start: '8:00', // a start time (10am in this example)
+                            end: '12:30' // Lunch
+                        },
+                        {
+                            dow: [1, 2, 3, 4, 5], // Monday - Friday (adding lunch hours)
+                            start: '14:00',
+                            end: '18:00',
+                        }
+                    ],
+                selectConstraint: "businessHours",
+                defaultView: 'listMonth',
+                events: function (start, end, timezone, callback) {
+                    if (window.location.pathname.split('/')[1] == "home" && window.location.pathname.split('/')[2] == "index") {
+                        var url = window.location.pathname.split('/')[3];
+                        var data = { urlid : url }
+                        $.ajax({
+                            url: '@Url.Action("GetRsrData", "Reservation")',
+                            type: "POST",
+                            data: data,
+                            dataType: 'json',
+                            success: function (result) {
+                                if (result.success) {
+                                    var events = [];
+                                    console.log(result)
+                                    $.each(result.Reservationdt, function (i, data) {
+                                        events.push(
+                                            {
+                                                id: data.Id,
+                                                title: data.Title,
+                                                description: data.Description,
+                                                start: data.Start,
+                                                end: data.End,
+                                                className: data.ClassName,
+                                                extendedProps: {
+                                                    ClientData: data.ExtendedProps.ClientData,
+                                                    AdminData: data.ExtendedProps.AdminData
+                                                },
+                                            });
+                                    });
+
+                                    callback(events);
+                                } else {
+                                    setPopUp(2000, "error", "False get Ajax", "");
+                                }
+                            }
+                        });
+                    }
+                },
+                editable: false,
+                eventLimit: true,
+
+                // edit reservatation data
+                @if (Request.IsAuthenticated && Model.Userdata.Role == "admin")
+                {   <text>
+                        eventMouseover: function (event, jsEvent, view) {
+                            $(this).attr('id', event.id);
+                            $('#' + event.id).popover({
+                                template: '<div class="popover popover-primary" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
+                                title: event.title,
+                                content: event.description,
+                                placement: 'top'
+                            });
+                            $('#' + event.id).popover('show');
+
+
+                        },
+                        eventMouseout: function (event, jsEvent, view) {
+                           $('#' + event.id).popover('hide');
+                        },
+                        eventClick: function (info) {
+                            addEvent.style.display = 'none';
+                            editEvent.style.display = 'block';
+
+                            addEventTitle.style.display = 'none';
+                            editEventTitle.style.display = 'block';
+                            modal.style.display = "block";
+                            document.getElementsByTagName('body')[0].style.overflow = 'hidden';
+                            createBackdropElement();
+
+                            // Calendar Event Featch
+                            var eventTitle = info.title;
+                            var eventDescription = info.description;
+
+                            // Task Modal Input
+                            var taskTitle = $('#write-e');
+                            var taskTitleValue = taskTitle.val(eventTitle);
+
+                            var taskDescription = $('#taskdescription');
+                            var taskDescriptionValue = taskDescription.val(eventDescription);
+
+                            var taskInputStarttDate = $("#start-date");
+                            var taskInputStarttDateValue = taskInputStarttDate.val(info.start.format("YYYY-MM-DD HH:mm:ss"));
+
+                            var taskInputEndDate = $("#end-date");
+                            var taskInputEndtDateValue = taskInputEndDate.val(info.end.format("YYYY-MM-DD HH:mm:ss"));
+
+                            var startDate = flatpickr(document.getElementById('start-date'), {
+                                enableTime: true,
+                                dateFormat: "Y-m-d H:i",
+                                defaultDate: info.start.format("YYYY-MM-DD HH:mm:ss"),
+                            });
+
+                            var abv = startDate.config.onChange.push(function (selectedDates, dateStr, instance) {
+                                var endtDate = flatpickr(document.getElementById('end-date'), {
+                                    enableTime: true,
+                                    dateFormat: "Y-m-d H:i",
+                                    minDate: dateStr
+                                });
+                            });
+
+                            var endtDate = flatpickr(document.getElementById('end-date'), {
+                                enableTime: true,
+                                dateFormat: "Y-m-d H:i",
+                                defaultDate: info.end.format("YYYY-MM-DD HH:mm:ss"),
+                                minDate: info.start.format("YYYY-MM-DD HH:mm:ss")
+                            });
+
+                            $('#edit-event').off('click').on('click', function (event) {
+                                event.preventDefault();
+                                /* Act on the event */
+                                var radioValue = $("input[name='marker']:checked").val();
+
+                                var taskStartTimeValue = document.getElementById("start-date").value;
+                                var taskEndTimeValue = document.getElementById("end-date").value;
+
+                                info.title = taskTitle.val();
+                                info.description = taskDescription.val();
+                                info.start = taskStartTimeValue;
+                                info.end = taskEndTimeValue;
+                                info.className = radioValue;
+
+                                $('#calendar').fullCalendar('updateEvent', info);
+                                modal.style.display = "none";
+                                modalResetData();
+                                document.getElementsByTagName('body')[0].removeAttribute('style');
+                            });
+                        }
+                    </text>
+                }
+
+            })
+
+            function addDays(date, days) {
+
+                var result = new Date(date);
+
+                result.setDate(result.getDate() + days);
+
+                return result;
+
+            }
+            // add Reservation calendar Config
+
+            function enableDatePicker() {
+
+
+                var startDate = flatpickr(document.getElementById('start-date'), {
+
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+
+                    minDate: addDays(new Date(), 1),
+                    minuteIncrement: 5,
+
+                    defaultHour: "08",
+
+                    minTime: "08", // start business
+
+                    maxTime: "17:00",    // End appointment Time
+
+                });
+
+
+                var abv = startDate.config.onChange.push(function (selectedDates, dateStr, instance) {
+
+                    document.getElementById('end-date-column').style.display = 'block';
+
+                    var endtDate = flatpickr(document.getElementById('end-date'), {
+
+                        defaultHour: moment(dateStr).add(30, 'm').format('hh'),
+
+                        defaultMinute: moment(dateStr).add(30, 'm').format('mm'),
+
+                        enableTime: true,
+
+                        dateFormat: "Y-m-d H:i",
+                        minDate: dateStr,
+                        maxDate: dateStr,
+                        minTime: moment(dateStr).add(30, 'm').format('hh:mm'),
+
+                        minuteIncrement: 5,
+
+                        maxTime: "18:00"
+                    });
+
+                })
+                document.getElementById('end-date-column').style.display = 'none';
+            }
+            function randomString(length, chars) {
+                var result = '';
+                for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+                return result;
+            }
+
+            function checkvalidation() {
+            var i = [
+                ($("input[name='marker']:checked").val()),
+                ($('#write-e').val()),
+                @if (Request.IsAuthenticated && Model.Userdata.Role == "admin")
+                {
+                    @:($('#client-data').val()),
+                }
+                ($('#start-date').val()),
+                ($('#end-date').val()),
+                ($('#taskdescription').val())
+                ];
+            for (a = 0; a < i.length; a++) {
+                if (i[a] == "") { return false; }
+            }
+            return true;
+            };
+             @if (Request.IsAuthenticated) {
+                <text>
+                // add event button
+                $("#add-e").off('click').on('click', function (event) {
+                    if (checkvalidation()) {
+                        swal.showLoading();
+                        var fileData = new FormData();
+                        var radioValue = $("input[name='marker']:checked").val();
+                        var randomAlphaNumeric = randomString(10, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+                        var inputValue = $("#write-e").val();
+                        var inputStarttDate = document.getElementById("start-date").value;
+                        var inputEndDate = document.getElementById("end-date").value;
+                        var arrayStartDate = inputStarttDate.split(' ');
+                        var arrayEndDate = inputEndDate.split(' ');
+                        var startDate = arrayStartDate[0];
+                        var startTime = arrayStartDate[1];
+                        var endDate = arrayEndDate[0];
+                        var endTime = arrayEndDate[1];
+
+                        var concatenateStartDateTime = startDate + 'T' + startTime + ':00';
+                        var concatenateEndDateTime = endDate + 'T' + endTime + ':00';
+
+                        var inputDescription = document.getElementById("taskdescription").value;
+                         @if (Model.Userdata.Role == "admin")
+                         {
+                             @:var clientdt = $('#client-data').val()
+                        }
+                        else
+                        {
+                             @:var clientdt =  "@User.Identity.Name"
+                        }
+
+                        var reservation = {
+                            id: randomAlphaNumeric,
+                            title: inputValue,
+                            start: concatenateStartDateTime,
+                            end: concatenateEndDateTime,
+                            className: radioValue,
+                            description: inputDescription,
+                            extendedProps:{
+                                ClientData: clientdt
+                            },
+                        };
+
+                        var jsondata = JSON.stringify(reservation);
+                        fileData.append('reservationdata', jsondata);
+                        $.ajax({
+                            url: '@Url.Action("CreateReservdata", "Reservation")',
+                            type: 'POST',
+                            data: fileData,
+                            dataType: 'json',
+                            processData: false,
+                            contentType: false,
+                            success: function (data) {
+                                // admin reserve
+                                if (data.success == "admin") {
+                                    console.log(data.reservationdata)
+                                    var reserve = {
+                                        id: data.reservationdata.Id,
+                                        title: data.reservationdata.Title,
+                                        start: data.reservationdata.Start,
+                                        end: data.reservationdata.End,
+                                        className: data.reservationdata.ClassName,
+                                        description: data.reservationdata.Description,
+                                        extendedProps: {
+                                            ClientData: data.reservationdata.ExtendedProps.ClientData,
+                                            AdminData: data.reservationdata.ExtendedProps.AdminData
+                                        },
+                                    };
+                                    var myCalendar = $('#calendar');
+                                    myCalendar.fullCalendar('renderEvent', reserve, true);
+                                    modal.style.display = "none";
+                                    modalResetData();
+                                    document.getElementsByTagName('body')[0].removeAttribute('style');
+                                    const toast = swal.mixin({
+                                        position: 'center',
+                                        showConfirmButton: false,
+                                        timer: 2000,
+                                        padding: '2em'
+                                    });
+                                    toast({
+                                        type: 'success',
+                                        title: data.text,
+                                        padding: '2em',
+                                    })
+                                    .then(() => {
+                                        location.reload();
+                                    })
+                                }
+                                // client reserve
+                                else if (data.success == "client") {
+
+                                }
+                                else {
+                                    setPopUp(2000, 'error', 'Reservation Failed', data.text);
+                                }
+                            },
+                            error: function () {
+                                swal({
+                                title: 'Authentication Failed',
+                                text: "Please Login first",
+                                type: 'error',
+                                padding: '2em'
+                                }).then(() => {
+                                window.location.href = "/account/login";
+                                })
+                            }
+                        });
+                    }
+                    else {
+                    setPopUp(1500, 'error', 'Reservation Failed', 'Please fill in all the required fields');
+                    }
+                });
+                </text>
+             }
+            function setPopUp(timer,type,title,text) {
+                const toast = swal.mixin({
+                position: 'center',
+                showConfirmButton: false,
+                timer: timer,
+                padding: '2em'
+                });
+
+                toast({
+                type: type,
+                title: title,
+                text: text,
+                padding: '2em',
+                });
+            }
+
+            // Setting dynamic style ( padding ) of the highlited ( current ) date
+            function setCurrentDateHighlightStyle() {
+                getCurrentDate = $('.fc-content-skeleton .fc-today').attr('data-date');
+                if (getCurrentDate === undefined) {
+                return;
+            }
+            splitDate = getCurrentDate.split('-');
+            if (splitDate[2] < 10) {
+                $('.fc-content-skeleton .fc-today .fc-day-number').css('padding', '3px 8px');
+                } else if (splitDate[2] >= 10) {
+                $('.fc-content-skeleton .fc-today .fc-day-number').css('padding', '3px 4px');
+                }
+            }
+            setCurrentDateHighlightStyle();
+
+            var fcButtons = document.getElementsByClassName('fc-button');
+            for (var i = 0; i < fcButtons.length; i++) {
+                fcButtons[i].addEventListener('click', function () {
+                    const mailScroll = new PerfectScrollbar('.fc-scroller', {
+                        suppressScrollX: true
+                    });
+                $('.fc-scroller').animate({ scrollTop: 0 }, 100);
+                    setCurrentDateHighlightStyle();
+                })
+            }
+        });
+    </script>
 </body>
 </html>

@@ -27,6 +27,8 @@ namespace reservation_booking_system.Entity_Framework
         public Nullable<int> Status { get; set; }
         public string Remarks { get; set; }
         public string Description { get; set; }
+        public string EventID { get; set; }
+        public string Approval { get; set; }
     
         public virtual Admin Admin { get; set; }
         public virtual Client Client { get; set; }

@@ -17,10 +17,23 @@ namespace reservation_booking_system.Controllers
 {
     public class AccountController : Controller
     {
-
         public ActionResult Login()
         {
-            return View();
+            if (Request.IsAuthenticated)
+            {
+                FormsIdentity user = (FormsIdentity)User.Identity;
+                var struserdata = user.Ticket.UserData;
+                var userdata = AccountController.UserDatastr(struserdata);
+                if (userdata.AccessLevel == 2)
+                {
+                    return RedirectToAction("Index","home", new { id = User.Identity.Name });
+                }
+                else
+                {
+                    return RedirectToAction("Dahboard", "home");
+                }
+            }
+                return View();
         }
 
         [HttpPost]
@@ -63,17 +76,15 @@ namespace reservation_booking_system.Controllers
                     // Create the cookie.
                     Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Home",new { id = admindata.ID });
 
                 }
                 else
                 {
                     ModelState.AddModelError("", "Incorrect email or password");
                     return View();
-                }
-              
+                } 
             }
-
             // client side
             else if (!(clientdata == null)) 
             {
@@ -101,7 +112,7 @@ namespace reservation_booking_system.Controllers
 
                     // Create the cookie.
                     Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encTicket));
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Dashboard", "Home");
                 }
                 else
                 {
@@ -128,22 +139,22 @@ namespace reservation_booking_system.Controllers
         public ActionResult Register(RegisterViewModel model)
         {
             ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
-            var cldata = reservationSystemDBEntities.Clients.Where(x => x.Email == model.Email || x.UserName == model.userName).FirstOrDefault();
+            var cldata = reservationSystemDBEntities.Clients.Where(x => x.Email == model.Email || x.UserName == model.UserName).FirstOrDefault();
             if (cldata == null)
             {
 
                 var rnd = GenerateRandomString(25);
                 Client client = new Client
                 {
-                    UserName = model.userName,
+                    UserName = model.UserName,
                     Name = model.Name,
                     Email = model.Email,
                     HashedPassword = HMACSHA256(model.Password, rnd),
                     HashedKey = rnd,
                     ContactNumber = model.Contact,
-                    CreatedBy = model.userName,
+                    CreatedBy = model.UserName,
                     CreatedTime = DateTime.Now.ToString(),
-                    UpdatedBy = model.userName,
+                    UpdatedBy = model.UserName,
                     UpdatedTime = DateTime.Now.ToString(),
                     Status = 1
 
@@ -203,9 +214,13 @@ namespace reservation_booking_system.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Logoff()
         {
+            // Sign Out FormAuthentication
             FormsAuthentication.SignOut();
+
+            // Clear session
             Session.Abandon();
-            return RedirectToAction("Index","Home");
+
+            return RedirectToAction("Dashboard","Home");
         }
 
         [AcceptVerbs("Get","Post")]
@@ -254,9 +269,8 @@ namespace reservation_booking_system.Controllers
             var struserdata = user.Ticket.UserData;
             var userdata = UserDatastr(struserdata);
             //FormsAuthenticationTicket ticket = FormsAuthentication.Decrypt(authCookie.Value);
-            return PartialView("_HeaderLogin", userdata);
+            return PartialView("_HeaderLogin",userdata);
         }
-
         public static UserData UserDatastr(string strdata)
         {
             string[] subs = strdata.Split(',');

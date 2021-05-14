@@ -56,6 +56,8 @@
           <Property Name="UpdatedTime" Type="varchar" MaxLength="50" />
           <Property Name="Status" Type="int" />
           <Property Name="Remarks" Type="varchar" MaxLength="255" />
+          <Property Name="EventID" Type="varchar" MaxLength="255" />
+          <Property Name="Approval" Type="varchar" MaxLength="255" />
         </EntityType>
         <Association Name="FK__Event__AdminID__403A8C7D">
           <End Role="Admin" Type="Self.Admin" Multiplicity="0..1" />
@@ -147,6 +149,8 @@
           <Property Name="Remarks" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Client" Relationship="ReservationSystemDBModel.FK__Event__ClientID__3F466844" FromRole="Event" ToRole="Client" />
+          <Property Name="EventID" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Approval" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK__Event__AdminID__403A8C7D">
           <End Type="ReservationSystemDBModel.Admin" Role="Admin" Multiplicity="0..1" />
@@ -217,6 +221,8 @@
           <EntitySetMapping Name="Events">
             <EntityTypeMapping TypeName="ReservationSystemDBModel.Event">
               <MappingFragment StoreEntitySet="Event">
+                <ScalarProperty Name="Approval" ColumnName="Approval" />
+                <ScalarProperty Name="EventID" ColumnName="EventID" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Remarks" ColumnName="Remarks" />
                 <ScalarProperty Name="Status" ColumnName="Status" />

@@ -39,7 +39,13 @@ namespace reservation_booking_system.ViewModels
         [Display(Name = "Password")]
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)\S{6,20}$", ErrorMessage = "Minimum 6 Max 20 characters atleast 1 Alphabet, 1 Number and 1 Special Character and avoid space")]
         public string Password { get; set; }
+        
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The passwords do not match.")]
 
+        public string ConfirmPassword { get; set; }
         [Required]
         [Display(Name = "Contact")]
         public int Contact { get; set; }
@@ -49,7 +55,7 @@ namespace reservation_booking_system.ViewModels
         [Required]
         [Display(Name = "UserName")]
         [Remote(action: "IsUserNameUsed", controller: "Account", ErrorMessage = "User Name already exists in Database")]
-        public string userName { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         [Display(Name = "Name")]
@@ -66,6 +72,12 @@ namespace reservation_booking_system.ViewModels
         [Display(Name = "Password")]
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)\S{6,20}$", ErrorMessage = "Minimum 6 Max 20 characters atleast 1 Alphabet, 1 Number and 1 Special Character and avoid space")]
         public string Password { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The passwords do not match.")]
+        public string ConfirmPassword { get; set; }
 
         [Required]
         [Display(Name = "Contact")]
