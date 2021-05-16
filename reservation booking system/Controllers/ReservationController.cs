@@ -90,7 +90,7 @@ namespace reservation_booking_system.Controllers
 
         }
 
-        // get the reservation for each admin by ajax
+        // get the reservation for each admin by ajax  // index page
         [HttpPost]
         public JsonResult GetRsrData(int urlid)
         {
@@ -108,7 +108,8 @@ namespace reservation_booking_system.Controllers
                 // role ==  admin
                 if (userdata.Role == "admin")
                     {
-                        foreach (var sub in dbdata)
+                        var alldbdata = reservationSystemDBEntities.Events.Where(x => x.AdminID == urlid).ToList();
+                        foreach (var sub in alldbdata)
                         {
                             var rtappr = ReturnAppr(sub.Approval);
                             var extendedProps = new ExtendedProps
@@ -134,29 +135,65 @@ namespace reservation_booking_system.Controllers
                 else if (userdata.Role == "client")
                 {
                     var clientdt = reservationSystemDBEntities.Clients.Where(x => x.UserName == User.Identity.Name).FirstOrDefault();
+                    
                     foreach (var sub in dbdata)
                     {
-                        var rtappr = ReturnAppr(sub.Approval);
-                        if (clientdt.ID == sub.ClientID)
+                        DateTime timestamp = DateTime.ParseExact(sub.EndTime, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                        if (DateTime.Now < timestamp)
                         {
-                            var extendedProps = new ExtendedProps
+                            var rtappr = ReturnAppr(sub.Approval);
+                            if (clientdt.ID == sub.ClientID)
                             {
-                                ClientData = sub.ClientID.ToString(),
-                            };
-                            var reservationdataView = new ReservationdataView
+                                var extendedProps = new ExtendedProps
+                                {
+                                    ClientData = sub.ClientID.ToString(),
+                                };
+                                var reservationdataView = new ReservationdataView
+                                {
+                                    Id = sub.EventID,
+                                    Title = sub.Title,
+                                    Start = sub.FromTime,
+                                    End = sub.EndTime,
+                                    ClassName = rtappr,
+                                    Description = sub.Description,
+                                    ExtendedProps = extendedProps
+                                };
+                                Reservationdt.Add(reservationdataView);
+                            }
+                            else
                             {
-                                Id = sub.EventID,
-                                Title = sub.Title,
-                                Start = sub.FromTime,
-                                End = sub.EndTime,
-                                ClassName = rtappr,
-                                Description = sub.Description,
-                                ExtendedProps = extendedProps
-                            };
-                            Reservationdt.Add(reservationdataView);
+                                var extendedProps = new ExtendedProps
+                                {
+                                    ClientData = ""
+                                };
+                                var reservationdataView = new ReservationdataView
+                                {
+                                    Id = "",
+                                    Title = "Reservation",
+                                    Start = sub.FromTime,
+                                    End = sub.EndTime,
+                                    ClassName = rtappr,
+                                    Description = "",
+                                    ExtendedProps = extendedProps
+                                };
+                                Reservationdt.Add(reservationdataView);
+                            }
                         }
-                        else
+                        
+                    }
+                    return Json(new { success = true, Reservationdt }, JsonRequestBehavior.AllowGet);
+                }
+                // not sign in
+                else
+                {
+
+                    foreach (var sub in dbdata)
+                    {
+                        DateTime timestamp = DateTime.ParseExact(sub.EndTime, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                        if (DateTime.Now < timestamp)
                         {
+                            
+                            var rtappr = ReturnAppr(sub.Approval);
                             var extendedProps = new ExtendedProps
                             {
                                 ClientData = ""
@@ -173,30 +210,6 @@ namespace reservation_booking_system.Controllers
                             };
                             Reservationdt.Add(reservationdataView);
                         }
-                    }
-                    return Json(new { success = true, Reservationdt }, JsonRequestBehavior.AllowGet);
-                }
-                // not sign in
-                else
-                {
-                    foreach (var sub in dbdata)
-                    {
-                        var rtappr = ReturnAppr(sub.Approval);
-                        var extendedProps = new ExtendedProps
-                        {
-                            ClientData = ""
-                        };
-                        var reservationdataView = new ReservationdataView
-                        {
-                            Id = "",
-                            Title = "Reservation",
-                            Start = sub.FromTime,
-                            End = sub.EndTime,
-                            ClassName = rtappr,
-                            Description = "",
-                            ExtendedProps = extendedProps
-                        };
-                        Reservationdt.Add(reservationdataView);
                     }
                     return Json(new { success = true, Reservationdt }, JsonRequestBehavior.AllowGet);
                 }
@@ -222,6 +235,7 @@ namespace reservation_booking_system.Controllers
                 ReservationdataView reservationdata = JsonConvert.DeserializeObject<ReservationdataView>(data);
                 var strid = Int32.Parse(User.Identity.Name);
                 var apr = Aprroval(reservationdata.ClassName);
+
                 var eventdt = reservationSystemDBEntities.Events.Where(x => x.EventID == reservationdata.Id && x.AdminID == strid).FirstOrDefault();
                 var defaultapproval = eventdt.Approval;
                 eventdt.Title = reservationdata.Title;
@@ -234,7 +248,7 @@ namespace reservation_booking_system.Controllers
                 eventdt.Status = 1;
                 reservationSystemDBEntities.SaveChanges();
                 
-                if (apr== "Approved" && defaultapproval == "Unapprove")
+                if (apr== "Approved" && defaultapproval == "Pending")
                 {
                     var eventdata = reservationSystemDBEntities.Events.Where(x => x.EventID == reservationdata.Id && x.AdminID == strid && x.Status == 1).FirstOrDefault();
                     var admindata = reservationSystemDBEntities.Admins.Where(x => x.ID == eventdata.AdminID).FirstOrDefault();
@@ -271,9 +285,10 @@ namespace reservation_booking_system.Controllers
                 eventdt.Status = 0;
                 eventdt.UpdatedBy = strid;
                 eventdt.UpdatedTime = DateTime.Now.ToString();
+                eventdt.Approval = "Rejected";
                 reservationSystemDBEntities.SaveChanges();
 
-                if (defaultapproval == "Unapprove")
+                if (defaultapproval == "Pending")
                 {
                     var eventdata = reservationSystemDBEntities.Events.Where(x => x.EventID == reservationdata.Id && x.AdminID == strid && x.Status == 0).FirstOrDefault();
                     var admindata = reservationSystemDBEntities.Admins.Where(x => x.ID == eventdata.AdminID).FirstOrDefault();
@@ -295,6 +310,10 @@ namespace reservation_booking_system.Controllers
             {
                 return "bg-success";
             }
+            else if (appr == "Pending")
+            {
+                return "bg-primary";
+            }
             else
             {
                 return "bg-danger";
@@ -307,9 +326,13 @@ namespace reservation_booking_system.Controllers
             {
                 return "Approved";
             }
+            else if(appr == "bg-danger")
+            {
+                return "Rejected";
+            }
             else
             {
-                return "Unapprove";
+                return "Pending";
             }
         }
         

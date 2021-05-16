@@ -86,9 +86,21 @@ namespace reservation_booking_system.Controllers
                 List<DashboardviewModel> Reservationdt = new List<DashboardviewModel>();
                 ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
                 var admindt = reservationSystemDBEntities.Admins.Where(x => x.Status == 1).Select(x => new { x.Name, x.ID, x.Email }).ToList();
+                
                 foreach (var sub in admindt)
                 {
-                    int datacount = reservationSystemDBEntities.Events.Where(x => x.AdminID == sub.ID && x.Status == 1 && x.Approval == "Approved").Count();
+                    var dataevent = reservationSystemDBEntities.Events.Where(x => x.AdminID == sub.ID && x.Status == 1 && x.Approval == "Approved").ToList();
+                    int datacount = 0;
+                    foreach (var subb in dataevent)
+                    {
+                        DateTime timestamp = DateTime.ParseExact(subb.EndTime, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                        if (DateTime.Now < timestamp)
+                        {
+                            datacount = datacount + 1;
+                        }
+                    }
+                    
+                    
                     var dashdata = new DashboardviewModel
                     {
                         Name = sub.Name,

@@ -41,8 +41,12 @@
                             <div class="row">
                                 <div class="col-md-8 col-12">
                                     <div class="labels">
-                                        <p id="niama" class="label label-danger">Unapprove</p>
+                                        <p class="label label-primary">Pending</p>
                                         <p class="label label-success">Approved</p>
+                                        @if (Request.IsAuthenticated && Model.Userdata.Role == "admin")
+                                        {
+                                            <p class="label label-danger">Rejected</p>
+                                        }
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-12">
@@ -132,16 +136,22 @@
 
                                                         <div class="d-sm-flex d-block">
                                                             <div class="n-chk">
-                                                                <label class="new-control new-radio radio-success">
+                                                                <label id="radio-success" class="new-control new-radio radio-success">
                                                                     <input type="radio" class="new-control-input" name="marker" value="bg-success">
                                                                     <span class="new-control-indicator"></span>Approve
                                                                 </label>
                                                             </div>
 
                                                             <div class="n-chk">
-                                                                <label class="new-control new-radio radio-danger">
+                                                                <label id="radio-primary" class="new-control new-radio radio-primary">
+                                                                    <input type="radio" class="new-control-input" name="marker" value="bg-primary" checked required>
+                                                                    <span class="new-control-indicator"></span>Pending
+                                                                </label>
+                                                            </div>
+                                                            <div class="n-chk">
+                                                                <label id="radio-danger" class="new-control new-radio radio-danger" style="display:none;">
                                                                     <input type="radio" class="new-control-input" name="marker" value="bg-danger" checked required>
-                                                                    <span class="new-control-indicator"></span>UnApprove
+                                                                    <span class="new-control-indicator"></span>Rejected
                                                                 </label>
                                                             </div>
                                                         </div>
@@ -157,7 +167,7 @@
                             </div>
 
                             <div class="modal-footer">
-                                <button id="delete-event" class="btn">Delete</button>
+                                <button id="delete-event" class="btn">Reject</button>
                                 <button id="discard" class="btn" data-dismiss="modal">Discard</button>
                                 <button id="add-e" class="btn">Add Reservation</button>
                                 <button id="edit-event" class="btn">Save</button>
@@ -234,9 +244,9 @@
                                                             
 
                                                             <div class="n-chk">
-                                                                <label class="new-control new-radio radio-danger">
-                                                                    <input type="radio" class="new-control-input" name="marker" value="bg-danger" checked required>
-                                                                    <span class="new-control-indicator"></span>UnApprove
+                                                                <label class="new-control new-radio radio-primary">
+                                                                    <input type="radio" class="new-control-input" name="marker" value="bg-primary" checked required>
+                                                                    <span class="new-control-indicator"></span>Pending
                                                                 </label>
                                                             </div>
                                                         </div>

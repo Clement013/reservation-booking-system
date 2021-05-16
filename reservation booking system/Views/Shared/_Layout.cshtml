@@ -189,9 +189,13 @@
                     @:document.getElementById('client-data').style.display = 'block';
                     @:document.getElementById('showclientdata').style.display = 'none';
                     @:document.getElementById('delete-event').style.display = 'none';
+                    @:document.getElementById('radio-danger').style.display = 'none';
+                    @: document.getElementById('discard').style.backgroundColor = "#fff";
+                    @:document.getElementById('radio-primary').style.display = 'inline-flex';
+                    @:document.getElementById('radio-success').style.display = 'inline-flex';
                 }
                 $('select option:not(:selected)').attr('disabled', false);
-                $('input:radio[name=marker]').filter('[value=bg-danger]').prop('checked', true);
+                $('input:radio[name=marker]').filter('[value=bg-primary]').prop('checked', true);
                 var getModalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
                 // Get Modal Backdrop
                 document.body.removeChild(getModalBackdrop)
@@ -390,14 +394,30 @@
                             document.getElementById('client-data').style.display = 'none'
                             document.getElementById('showclientdata').style.display = 'block'
                             document.getElementById('showclientdata').value = info.extendedProps.Clientusername;
-                            document.getElementById('delete-event').style.display = 'block';
+
+
                             $('select option:not(:selected)').attr('disabled', true);
                             clearRadioGroup();
-                            if (info.className == "bg-success") {
-                                $('input:radio[name=marker]').filter('[value=bg-success]').prop('checked', true);
-                            } else {
+                            if (info.className == "bg-danger") {
+                                document.getElementById('radio-danger').style.display = 'inline-flex';
+                                document.getElementById('radio-primary').style.display = 'none';
+                                document.getElementById('radio-success').style.display = 'none';
+
                                 $('input:radio[name=marker]').filter('[value=bg-danger]').prop('checked', true);
+                                editEvent.style.display = 'none';
+                                document.getElementById('delete-event').style.display = 'none';
+                                document.getElementById('discard').style.backgroundColor = "#e2d1ff";
+
+                            } else if (info.className == "bg-success") {
+                                $('input:radio[name=marker]').filter('[value=bg-success]').prop('checked', true);
+                                document.getElementById('delete-event').style.display = 'none';
+                            } else {
+                                $('input:radio[name=marker]').filter('[value=bg-primary]').prop('checked', true);
+                                document.getElementById('delete-event').style.display = 'block';
+
                             }
+
+
                             // Calendar Event Featch
                             var eventTitle = info.title;
                             var eventDescription = info.description;
@@ -519,7 +539,7 @@
                                                     ).then(() => {
                                                         location.reload();
                                                     });
-                                                    
+
                                                 }
                                                 else {
                                                     setPopUp(2000, 'error', data.text, "");
@@ -533,7 +553,7 @@
                                                 })
                                             }
                                         });
-                                        
+
                                     }
                                 })
                             })
@@ -845,7 +865,7 @@
             </text>
          }
         });
-        
+
     </script>
 </body>
 </html>

@@ -172,11 +172,12 @@ namespace reservation_booking_system.Mail
                 htmltemplete = htmltemplete.Replace("[End]", eventdata.EndTime);
                 htmltemplete = htmltemplete.Replace("[Description]", eventdata.Description);
                 htmltemplete = htmltemplete.Replace("[adminName]", admindata.Name);
+                htmltemplete = htmltemplete.Replace("[Status]", eventdata.Approval);
                 htmltemplete = htmltemplete.Replace("[contact]", admindata.ContactNumber.ToString());
 
 
                 // create email subject for client
-                var sub = "Cancel Reservation for " + admindata.Name;
+                var sub = "Rejected Reservation for " + admindata.Name;
 
                 // send email
                 var debug = Convert.ToBoolean(ConfigurationManager.AppSettings["debug"].ToString());
