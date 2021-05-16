@@ -5,11 +5,11 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="0d5efe58d448466ca11167cec0aef732" Name="Diagram1" >
-        <EntityTypeShape EntityType="ReservationSystemDBModel.Admin" Width="1.5" PointX="0.625" PointY="0.75" />
         <EntityTypeShape EntityType="ReservationSystemDBModel.Event" Width="1.5" PointX="3.125" PointY="0.625" />
-        <AssociationConnector Association="ReservationSystemDBModel.FK__Event__AdminID__403A8C7D" />
-        <EntityTypeShape EntityType="ReservationSystemDBModel.Client" Width="1.5" PointX="5.25" PointY="0.625" />
+        <EntityTypeShape EntityType="ReservationSystemDBModel.Client" Width="1.5" PointX="5.25" PointY="0.75" />
         <AssociationConnector Association="ReservationSystemDBModel.FK__Event__ClientID__3F466844" />
+        <EntityTypeShape EntityType="ReservationSystemDBModel.Admin" Width="1.5" PointX="0.875" PointY="1" />
+        <AssociationConnector Association="ReservationSystemDBModel.FK__Event__AdminID__403A8C7D" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

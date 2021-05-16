@@ -22,24 +22,32 @@ namespace reservation_booking_system.Controllers
                 // admin 
                 if (userdata.AccessLevel == 2)
                 {
-                    ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
-                    List<Client> Client = new List<Client>();
-                    var clientdata = reservationSystemDBEntities.Clients.Where(x => x.Status == 1).ToList();
-                    foreach(var sub in clientdata)
+                    if(id.ToString() == User.Identity.Name)
                     {
-                        Client client = new Client
+                        ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
+                        List<Client> Client = new List<Client>();
+                        var clientdata = reservationSystemDBEntities.Clients.Where(x => x.Status == 1).ToList();
+                        foreach (var sub in clientdata)
                         {
-                            ID = sub.ID,
-                            Name = sub.Name,
+                            Client client = new Client
+                            {
+                                ID = sub.ID,
+                                Name = sub.Name,
+                            };
+                            Client.Add(client);
+                        }
+                        HomeViewModel homeViewModel = new HomeViewModel
+                        {
+                            Userdata = userdata,
+                            Clients = Client,
                         };
-                        Client.Add(client);
+                        return View(homeViewModel);
                     }
-                    HomeViewModel homeViewModel = new HomeViewModel
+                    else
                     {
-                        Userdata = userdata,
-                        Clients = Client,
-                    };
-                    return View("Index", homeViewModel);
+                        return View("Error");
+                    }
+                    
                 }
                 // client
                 else
@@ -48,7 +56,7 @@ namespace reservation_booking_system.Controllers
                     {
                         Userdata = userdata,
                     };
-                    return View("Index", homeViewModel);
+                    return View(homeViewModel);
                 }
             }
             else
@@ -57,26 +65,48 @@ namespace reservation_booking_system.Controllers
             }
             
         }
+
+        [Route("home/dashboard")]
         public ActionResult Dashboard()
         {
+            UserData userdata = new UserData();
             if (Request.IsAuthenticated)
             {
                 FormsIdentity user = (FormsIdentity)User.Identity;
                 var struserdata = user.Ticket.UserData;
-                var userdata = AccountController.UserDatastr(struserdata);
-                if (userdata.AccessLevel == 2)
-                {
-                    return RedirectToAction("Index", new { id = User.Identity.Name });
-                }
-                else
-                {
-                    return View();
-                }
+                userdata = AccountController.UserDatastr(struserdata);
+            }
+            
+            if (userdata.AccessLevel == 2)
+            {
+                return RedirectToAction("Index", new { id = User.Identity.Name });
             }
             else
             {
-                return View();
+                List<DashboardviewModel> Reservationdt = new List<DashboardviewModel>();
+                ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
+                var admindt = reservationSystemDBEntities.Admins.Where(x => x.Status == 1).Select(x => new { x.Name, x.ID, x.Email }).ToList();
+                foreach (var sub in admindt)
+                {
+                    int datacount = reservationSystemDBEntities.Events.Where(x => x.AdminID == sub.ID && x.Status == 1 && x.Approval == "Approved").Count();
+                    var dashdata = new DashboardviewModel
+                    {
+                        Name = sub.Name,
+                        Email = sub.Email,
+                        Id = sub.ID,
+                        Reservation = datacount
+                    };
+                    Reservationdt.Add(dashdata);
+                }
+                HomeViewModel homeViewModel = new HomeViewModel
+                {
+                    Userdata = userdata,
+                    Dashview = Reservationdt
+                };
+                
+                return View(homeViewModel);
             }
+           
         }
     }
     

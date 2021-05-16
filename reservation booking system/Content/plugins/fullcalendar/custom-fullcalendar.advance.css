@@ -226,11 +226,12 @@ input[readonly] {
   padding: 10px 25px; }
 
 #addEventsModal .modal-footer #edit-event {
-  background-color: #009688;
-  color: #fff;
-  font-weight: 600;
-  border: 1px solid #e0e6ed;
-  padding: 10px 25px; }
+    background-color: #cd1b54;
+    color: #fff;
+    font-weight: 600;
+    border: 1px solid #e0e6ed;
+    padding: 10px 25px;
+}
 
 #addEventsModal .modal-footer [data-dismiss="modal"] {
   background-color: #fff;

@@ -48,12 +48,15 @@ namespace reservation_booking_system.ViewModels
         public string ConfirmPassword { get; set; }
         [Required]
         [Display(Name = "Contact")]
-        public int Contact { get; set; }
+        [RegularExpression(@"^[0-9]{7,12}$", ErrorMessage = "Minimum 8 Max 12 digit and avoid space")]
+        public string Contact { get; set; }
+
     }
     public class RegisterViewModel
     {
         [Required]
         [Display(Name = "UserName")]
+        [RegularExpression(@"^(?=.*[a-z])\S{6,15}$", ErrorMessage = "Minimum 6 Max 15 characters, 1 small letter and avoid space")]
         [Remote(action: "IsUserNameUsed", controller: "Account", ErrorMessage = "User Name already exists in Database")]
         public string UserName { get; set; }
 
@@ -70,7 +73,7 @@ namespace reservation_booking_system.ViewModels
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
-        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)\S{6,20}$", ErrorMessage = "Minimum 6 Max 20 characters atleast 1 Alphabet, 1 Number and 1 Special Character and avoid space")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)\S{6,20}$", ErrorMessage = "Minimum 6 Max 20 characters atleast 1 Alphabet, 1 Number and avoid space")]
         public string Password { get; set; }
 
         [Required]
@@ -80,8 +83,9 @@ namespace reservation_booking_system.ViewModels
         public string ConfirmPassword { get; set; }
 
         [Required]
+        [RegularExpression(@"^[0-9]{7,12}$", ErrorMessage = "Minimum 8 Max 12 digit and avoid space")]
         [Display(Name = "Contact")]
-        public int Contact { get; set; }
+        public string Contact { get; set; }
     }
 
     public class UserData

@@ -287,6 +287,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Mail\MailServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="ViewModels\ReservationViewModels.cs" />
@@ -375,7 +376,11 @@
     <Content Include="Content\assets\img\fr.png" />
     <Content Include="Content\assets\img\jp.png" />
     <Content Include="Content\assets\img\logo.png" />
+    <Content Include="Content\assets\img\logo1.png" />
     <Content Include="Content\assets\img\mindset.svg" />
+    <Content Include="Content\assets\img\user-circle.png" />
+    <Content Include="Content\assets\img\user.png" />
+    <Content Include="Content\assets\img\userpicture.png" />
     <Content Include="Content\assets\js\app.js" />
     <Content Include="Content\assets\js\apps\contact.js" />
     <Content Include="Content\assets\js\apps\custom-mailbox.js" />
@@ -951,6 +956,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Mail\AdminReservetemplete.html" />
+    <Content Include="Mail\ApproveReservation.html" />
+    <Content Include="Mail\CancelReservationtemplete.html" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\plugins\dropify\fonts\dropify.eot" />
@@ -967,6 +975,7 @@
     <Content Include="Entity_Framework\ReservationSystemDB.edmx.diagram">
       <DependentUpon>ReservationSystemDB.edmx</DependentUpon>
     </Content>
+    <Content Include="Mail\ClientReservetemplete.html" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

@@ -1,8 +1,54 @@
-﻿
+﻿@model reservation_booking_system.ViewModels.HomeViewModel
 @{
     ViewBag.Title = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<style>
+    h2#head {
+        padding: 30px 0;
+    }
+    a.viewdata:hover {
+        background-color: #1B55A0
+    }
+</style>
+<h2 id="head">Dashboard</h2>
 
-<h2>Dashboard</h2>
+<div class="main-container" id="container">
+    <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+            <div class="row layout-top-spacing">
+                @foreach (var sub in Model.Dashview)
+                {
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+                        <div class="widget widget-card-two">
+                            <div class="widget-content">
+                                <div class="media">
+                                    <div class="w-img">
+                                        <img src="~/Content/assets/img/user-circle.png" alt="avatar">
+                                    </div>
+                                    <div class="media-body">
+                                        <h6>@sub.Name</h6>
+                                        <p class="meta-date-time">@sub.Email</p>
+                                    </div>
+                                </div>
 
+                                <div class="card-bottom-section">
+                                    @if (!(sub.Reservation == 0))
+                                    {
+                                        <h5>Have @sub.Reservation Reservation</h5>
+                                    }
+                                    else
+                                    {
+                                        <h5>No reservation</h5>
+                                    }
+                                    <a href="/home/index/@sub.Id" class="btn viewdata">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

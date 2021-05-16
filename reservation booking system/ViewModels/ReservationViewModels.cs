@@ -24,8 +24,11 @@ namespace reservation_booking_system.ViewModels
     {
         [JsonProperty("ClientData")]
         public string ClientData { get; set; }
-        [JsonProperty("AdminData")]
-        public string AdminData { get; set; }
+        [JsonProperty("Adminid")]
+        public int Adminid { get; set; }
+        [JsonProperty("ClientName")]
+        public string ClientName { get; set; }
+       
     } 
     
 }

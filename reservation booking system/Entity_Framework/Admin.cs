@@ -22,15 +22,15 @@ namespace reservation_booking_system.Entity_Framework
     
         public int ID { get; set; }
         public string Name { get; set; }
-        public Nullable<int> ContactNumber { get; set; }
+        public string ContactNumber { get; set; }
         public string Email { get; set; }
+        public string HashKey { get; set; }
+        public string HashedPassword { get; set; }
         public string CreatedTime { get; set; }
         public Nullable<int> UpdatedBy { get; set; }
         public string UpdatedTime { get; set; }
         public Nullable<int> Status { get; set; }
         public string Remarks { get; set; }
-        public string HashKey { get; set; }
-        public string HashedPassword { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Event> Events { get; set; }

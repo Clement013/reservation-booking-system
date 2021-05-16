@@ -30,7 +30,7 @@ namespace reservation_booking_system.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Dahboard", "home");
+                    return RedirectToAction("Dashboard", "home");
                 }
             }
                 return View();
@@ -98,7 +98,7 @@ namespace reservation_booking_system.Controllers
                         Role = "client",
                         AccessLevel = 1
                     };
-                    var userdata = String.Join(",", userData.Name, userData.Role, userData.AccessLevel);
+                    var userdata = string.Join(",", userData.Name, userData.Role, userData.AccessLevel);
                     FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
                         1,
                         clientdata.UserName,
@@ -157,7 +157,6 @@ namespace reservation_booking_system.Controllers
                     UpdatedBy = model.UserName,
                     UpdatedTime = DateTime.Now.ToString(),
                     Status = 1
-
                 };
                 reservationSystemDBEntities.Clients.Add(client);
                 reservationSystemDBEntities.SaveChanges();
@@ -176,7 +175,6 @@ namespace reservation_booking_system.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult RegisterAdmin(RegisterAdViewModel model)
         {
@@ -196,11 +194,17 @@ namespace reservation_booking_system.Controllers
                     ContactNumber = model.Contact,
                     CreatedTime = DateTime.Now.ToString(),
                     UpdatedTime = DateTime.Now.ToString(),
+                    
                     Status = 1
                     
                 };
+                
                 reservationSystemDBEntities.Admins.Add(admin);
                 reservationSystemDBEntities.SaveChanges();
+                var id = reservationSystemDBEntities.Admins.Where(x => x.Email == model.Email).FirstOrDefault();
+                id.UpdatedBy = id.ID;
+                reservationSystemDBEntities.SaveChanges();
+
                 return RedirectToAction("Login");
             }
             else

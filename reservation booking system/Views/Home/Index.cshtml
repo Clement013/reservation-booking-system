@@ -12,6 +12,21 @@
         color: black;
        
     }
+    #addEventsModal .modal-footer #edit-event {
+        display: block;
+        background-color: #1b55e2;
+        color: #fff;
+        font-weight: 600;
+        border: 1px solid #1b55e2;
+        padding: 10px 25px;
+    }
+    #addEventsModal .modal-footer #delete-event {
+        background-color: #cd1b54;
+        color: #fff;
+        font-weight: 600;
+        border: 1px solid #e0e6ed;
+        padding: 10px 25px;
+    }
 </style>
 
 
@@ -26,8 +41,8 @@
                             <div class="row">
                                 <div class="col-md-8 col-12">
                                     <div class="labels">
-                                        <p id="niama" class="label label-danger">Unapproval</p>
-                                        <p class="label label-success">Approval</p>
+                                        <p id="niama" class="label label-danger">Unapprove</p>
+                                        <p class="label label-success">Approved</p>
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-12">
@@ -73,7 +88,8 @@
                                                 <div class="col-md-12">
                                                     <label for="client-data" class="">Client Data</label>
                                                     <div class="d-flex event-title">
-                                                        <select id="client-data" class="form-control" aria-label="Default select example">
+                                                        <input style="display:none" id="showclientdata" type="text" class="form-control" readonly/>
+                                                        <select id="client-data"  class="form-control" aria-label="Default select example">
                                                             <option hidden disabled selected>Open this select menu</option>
                                                             @foreach (var data in Model.Clients)
                                                             {
@@ -118,14 +134,14 @@
                                                             <div class="n-chk">
                                                                 <label class="new-control new-radio radio-success">
                                                                     <input type="radio" class="new-control-input" name="marker" value="bg-success">
-                                                                    <span class="new-control-indicator"></span>Approval
+                                                                    <span class="new-control-indicator"></span>Approve
                                                                 </label>
                                                             </div>
 
                                                             <div class="n-chk">
                                                                 <label class="new-control new-radio radio-danger">
                                                                     <input type="radio" class="new-control-input" name="marker" value="bg-danger" checked required>
-                                                                    <span class="new-control-indicator"></span>UnApproval
+                                                                    <span class="new-control-indicator"></span>UnApprove
                                                                 </label>
                                                             </div>
                                                         </div>
@@ -141,8 +157,9 @@
                             </div>
 
                             <div class="modal-footer">
+                                <button id="delete-event" class="btn">Delete</button>
                                 <button id="discard" class="btn" data-dismiss="modal">Discard</button>
-                                <button id="add-e" class="btn">Add Task</button>
+                                <button id="add-e" class="btn">Add Reservation</button>
                                 <button id="edit-event" class="btn">Save</button>
                             </div>
 
@@ -211,20 +228,15 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="event-badge">
-                                                        <p class="">Badge:</p>
+                                                        <p class="">Approval:</p>
 
                                                         <div class="d-sm-flex d-block">
-                                                            <div class="n-chk">
-                                                                <label class="new-control new-radio radio-success">
-                                                                    <input type="radio" class="new-control-input" name="marker" value="bg-success">
-                                                                    <span class="new-control-indicator"></span>Approval
-                                                                </label>
-                                                            </div>
+                                                            
 
                                                             <div class="n-chk">
                                                                 <label class="new-control new-radio radio-danger">
                                                                     <input type="radio" class="new-control-input" name="marker" value="bg-danger" checked required>
-                                                                    <span class="new-control-indicator"></span>UnApproval
+                                                                    <span class="new-control-indicator"></span>UnApprove
                                                                 </label>
                                                             </div>
                                                         </div>
@@ -241,7 +253,7 @@
 
                             <div class="modal-footer">
                                 <button id="discard" class="btn" data-dismiss="modal">Discard</button>
-                                <button id="add-e" class="btn">Add Task</button>
+                                <button id="add-e" class="btn">Add Reservation</button>
                                 <button id="edit-event" class="btn">Save</button>
                             </div>
 

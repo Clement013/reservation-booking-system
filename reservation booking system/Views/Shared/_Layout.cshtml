@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet">
     <link href="/Content/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="/Content/assets/css/plugins.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/x-icon" href="/Content/assets/img/favicon.ico" />
     <!-- END GLOBAL MANDATORY STYLES -->
     <!-- BEGIN PAGE LEVEL STYLE -->
     <link href="/Content/plugins/fullcalendar/fullcalendar.css" rel="stylesheet" type="text/css" />
@@ -19,10 +20,16 @@
     <link href="~/Content/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" />
     <link href="~/Content/plugins/sweetalerts/sweetalert.css" rel="stylesheet" />
     <link href="~/Content/plugins/select2/select2.min.css" rel="stylesheet" />
+    <link href="~/Content/assets/css/dashboard/dash_2.css" rel="stylesheet" />
     <!-- END PAGE LEVEL STYLE -->
-
+    <style>
+        .navbar .nav-logo a.navbar-brand img {
+            height: 90px;
+        }
+    </style>
 </head>
 <body>
+    
     @Html.Partial("_Header")
     <!--  BEGIN MAIN CONTAINER  -->
     <div class="main-container" id="container">
@@ -34,20 +41,20 @@
             <nav id="topbar">
                 <ul class="navbar-nav theme-brand flex-row  text-center">
                     <li class="nav-item theme-logo">
-                        <a href="/home/index">
+                        <a href="/home/dashboard">
                             <img src="/Content/assets/img/90x90.jpg" class="navbar-logo" alt="logo">
                         </a>
                     </li>
                     <li class="nav-item theme-text">
-                        <a href="index.html" class="nav-link">Reservation Booking System</a>
+                        <a href="index.html" class="nav-link">RBS</a>
                     </li>
                 </ul>
 
                 <ul class="list-unstyled menu-categories" id="topAccordion">
 
                     <li class="menu single-menu active">
-                        <a href="/home/index" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                            <div class="">
+                        <a href="javascript:void(0);" data-toggle="collapse" onclick="window.location.href='/home/dashboard'" aria-expanded="false" class="dropdown-toggle">
+                            <div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                                 <span>Dashboard</span>
                             </div>
@@ -55,19 +62,19 @@
                     </li>
 
                     <li class="menu single-menu active">
-                        <a href="#app" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">
+                        <a href="javascript:void(0);" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cpu"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
-                                <span>Apps</span>
+                                <span>Coming Soon</span>
                             </div>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
                         </a>
                         <ul class="collapse submenu list-unstyled" id="app" data-parent="#topAccordion">
                             <li>
-                                <a href="apps_chat.html"> Chat </a>
+                                <a href="javascript:void(0);"> Chat </a>
                             </li>
                             <li>
-                                <a href="apps_mailbox.html"> Mailbox </a>
+                                <a href="javascript:void(0);"> Profile </a>
                             </li>
                         </ul>
                     </li>
@@ -110,7 +117,8 @@
     <script src="~/Content/plugins/sweetalerts/sweetalert2.min.js"></script>
     <script src="~/Content/plugins/sweetalerts/custom-sweetalert.js"></script>
     <script src="~/Content/plugins/select2/select2.min.js"></script>
-   
+    <script src="~/Content/assets/js/dashboard/dash_2.js"></script>
+
     <!-- END PAGE LEVEL SCRIPTS -->
     <script>
         $(document).ready(function () {
@@ -173,60 +181,77 @@
                 }
                 for (j = 0; j < textarea.length; j++) {
                     textarea[j].value = '';
-                    i
+
                 }
                 clearselection();
-                // Get Modal Backdrop
+                @if (Request.IsAuthenticated && Model.Userdata.Role == "admin")
+                {
+                    @:document.getElementById('client-data').style.display = 'block';
+                    @:document.getElementById('showclientdata').style.display = 'none';
+                    @:document.getElementById('delete-event').style.display = 'none';
+                }
+                $('select option:not(:selected)').attr('disabled', false);
+                $('input:radio[name=marker]').filter('[value=bg-danger]').prop('checked', true);
                 var getModalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+                // Get Modal Backdrop
                 document.body.removeChild(getModalBackdrop)
             }
 
-            // When the user clicks on the button, open the modal
-            btn.onclick = function () {
+
+            if (window.location.pathname.split('/')[1] == "home" && window.location.pathname.split('/')[2] == "index") {
+                // When the user clicks on the button, open the modal
+                btn.onclick = function () {
                 @if (Request.IsAuthenticated) {
                     <text>
-                        modal.style.display = "block";
-                        addEvent.style.display = 'block';
-                        editEvent.style.display = 'none';
-                        addEventTitle.style.display = 'block';
-                        editEventTitle.style.display = 'none';
-                        document.getElementsByTagName('body')[0].style.overflow = 'hidden';
-                        createBackdropElement();
-                        enableDatePicker();
+                    @if(Model.Userdata.Role == "admin")
+                {
+                    @:document.getElementById('delete-event').style.display = 'none';
+                }
+                    modal.style.display = "block";
+                    addEvent.style.display = 'block';
+                    editEvent.style.display = 'none';
+                    addEventTitle.style.display = 'block';
+                    editEventTitle.style.display = 'none';
+                    document.getElementsByTagName('body')[0].style.overflow = 'hidden';
+                    createBackdropElement();
+                    enableDatePicker();
                      </text>
                 }
                 else{
                     <text>
-                        swal({
-                            title: 'Authentication Failed',
-                            text: "Please Login first",
-                            type: 'error',
-                            padding: '2em'
-                        }).then(() => {
-                            window.location.href = "/account/login";
-                        })
+                    swal({
+                        title: 'Authentication Failed',
+                        text: "Please Login first",
+                        type: 'error',
+                        padding: '2em'
+                    }).then(() => {
+                        window.location.href = "/account/login";
+                    })
+
                     </text>
                 }
-            }
-            // Clear Data and close the modal when the user clicks on Discard button
-            discardModal.onclick = function () {
-                modalResetData();
-                document.getElementsByTagName('body')[0].removeAttribute('style');
-            }
-
-            // Clear Data and close the modal when the user clicks on <span> (x).
-            span.onclick = function () {
-                modalResetData();
-                document.getElementsByTagName('body')[0].removeAttribute('style');
-            }
-
-            // Clear Data and close the modal when the user clicks anywhere outside of the modal.
-            window.onclick = function (event) {
-                if (event.target == modal) {
+                }
+                // Clear Data and close the modal when the user clicks on Discard button
+                discardModal.onclick = function () {
                     modalResetData();
                     document.getElementsByTagName('body')[0].removeAttribute('style');
                 }
+
+                // Clear Data and close the modal when the user clicks on <span> (x).
+                span.onclick = function () {
+                    modalResetData();
+                    document.getElementsByTagName('body')[0].removeAttribute('style');
+                }
+
+                // Clear Data and close the modal when the user clicks anywhere outside of the modal.
+                window.onclick = function (event) {
+                    if (event.target == modal) {
+                        modalResetData();
+                        document.getElementsByTagName('body')[0].removeAttribute('style');
+                    }
+                }
             }
+
 
             newDate = new Date()
             monthArray = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
@@ -304,7 +329,7 @@
                             success: function (result) {
                                 if (result.success) {
                                     var events = [];
-                                    console.log(result)
+                                    //console.log(result)
                                     $.each(result.Reservationdt, function (i, data) {
                                         events.push(
                                             {
@@ -316,14 +341,16 @@
                                                 className: data.ClassName,
                                                 extendedProps: {
                                                     ClientData: data.ExtendedProps.ClientData,
-                                                    AdminData: data.ExtendedProps.AdminData
+                                                    Clientusername: data.ExtendedProps.ClientName
                                                 },
                                             });
                                     });
 
                                     callback(events);
                                 } else {
-                                    setPopUp(2000, "error", "False get Ajax", "");
+                                    var events = [];
+                                    callback(events);
+
                                 }
                             }
                         });
@@ -339,7 +366,7 @@
                             $(this).attr('id', event.id);
                             $('#' + event.id).popover({
                                 template: '<div class="popover popover-primary" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>',
-                                title: event.title,
+                                title: event.extendedProps.Clientusername,
                                 content: event.description,
                                 placement: 'top'
                             });
@@ -359,7 +386,18 @@
                             modal.style.display = "block";
                             document.getElementsByTagName('body')[0].style.overflow = 'hidden';
                             createBackdropElement();
-
+                            document.getElementById('end-date-column').style.display = 'block'
+                            document.getElementById('client-data').style.display = 'none'
+                            document.getElementById('showclientdata').style.display = 'block'
+                            document.getElementById('showclientdata').value = info.extendedProps.Clientusername;
+                            document.getElementById('delete-event').style.display = 'block';
+                            $('select option:not(:selected)').attr('disabled', true);
+                            clearRadioGroup();
+                            if (info.className == "bg-success") {
+                                $('input:radio[name=marker]').filter('[value=bg-success]').prop('checked', true);
+                            } else {
+                                $('input:radio[name=marker]').filter('[value=bg-danger]').prop('checked', true);
+                            }
                             // Calendar Event Featch
                             var eventTitle = info.title;
                             var eventDescription = info.description;
@@ -367,56 +405,138 @@
                             // Task Modal Input
                             var taskTitle = $('#write-e');
                             var taskTitleValue = taskTitle.val(eventTitle);
-
                             var taskDescription = $('#taskdescription');
                             var taskDescriptionValue = taskDescription.val(eventDescription);
-
                             var taskInputStarttDate = $("#start-date");
                             var taskInputStarttDateValue = taskInputStarttDate.val(info.start.format("YYYY-MM-DD HH:mm:ss"));
 
                             var taskInputEndDate = $("#end-date");
-                            var taskInputEndtDateValue = taskInputEndDate.val(info.end.format("YYYY-MM-DD HH:mm:ss"));
+                            var taskInputEndtDateValue = taskInputEndDate.val(info.end.format("YYYY-MM-DD HH:mm"));
 
                             var startDate = flatpickr(document.getElementById('start-date'), {
                                 enableTime: true,
                                 dateFormat: "Y-m-d H:i",
                                 defaultDate: info.start.format("YYYY-MM-DD HH:mm:ss"),
+                                minuteIncrement: 5,
+                                defaultHour: "08:00",
+                                minTime: "08:00", // start business
+                                maxTime: "17:00",    // End appointment Time
                             });
 
                             var abv = startDate.config.onChange.push(function (selectedDates, dateStr, instance) {
+
                                 var endtDate = flatpickr(document.getElementById('end-date'), {
                                     enableTime: true,
                                     dateFormat: "Y-m-d H:i",
-                                    minDate: dateStr
+                                    minDate: dateStr,
+                                    maxDate: dateStr,
+                                    minTime: moment(dateStr).add(30, 'm').format('HH:mm'),
+                                    maxTime: "18:00",    // End appointment Time
+                                    defaultHour: moment(info.end).get('hour'),
+                                    defaultMinute: moment(info.end).get('minute'),
                                 });
                             });
 
                             var endtDate = flatpickr(document.getElementById('end-date'), {
                                 enableTime: true,
                                 dateFormat: "Y-m-d H:i",
-                                defaultDate: info.end.format("YYYY-MM-DD HH:mm:ss"),
-                                minDate: info.start.format("YYYY-MM-DD HH:mm:ss")
+                                minDate: info.start.format("YYYY-MM-DD HH:mm"),
+                                maxDate: info.end.format("YYYY-MM-DD HH:mm"),
+                                minTime: "08:00", // start business
+                                maxTime: "18:00",    // End appointment Time
+                                defaultDate: info.end.format("YYYY-MM-DD HH:mm"),
                             });
 
                             $('#edit-event').off('click').on('click', function (event) {
+
                                 event.preventDefault();
                                 /* Act on the event */
+                                var fileData = new FormData();
                                 var radioValue = $("input[name='marker']:checked").val();
+                                var inputStarttDate = document.getElementById("start-date").value;
+                                var inputEndDate = document.getElementById("end-date").value;
+                                var arrayStartDate = inputStarttDate.split(' ');
+                                var arrayEndDate = inputEndDate.split(' ');
+                                var startDate = arrayStartDate[0];
+                                var startTime = arrayStartDate[1];
+                                var endDate = arrayEndDate[0];
+                                var endTime = arrayEndDate[1];
 
-                                var taskStartTimeValue = document.getElementById("start-date").value;
-                                var taskEndTimeValue = document.getElementById("end-date").value;
+                                var concatenateStartDateTime = startDate + 'T' + startTime + ':00';
+                                var concatenateEndDateTime = endDate + 'T' + endTime + ':00';
 
-                                info.title = taskTitle.val();
-                                info.description = taskDescription.val();
-                                info.start = taskStartTimeValue;
-                                info.end = taskEndTimeValue;
-                                info.className = radioValue;
+                                var upreservation = {
+                                    id: info.id,
+                                    title: $("#write-e").val(),
+                                    start: concatenateStartDateTime,
+                                    end: concatenateEndDateTime,
+                                    className: radioValue,
+                                    description: taskDescription.val(),
+                                };
 
-                                $('#calendar').fullCalendar('updateEvent', info);
-                                modal.style.display = "none";
-                                modalResetData();
-                                document.getElementsByTagName('body')[0].removeAttribute('style');
+                                var jsondata = JSON.stringify(upreservation);
+                                fileData.append('reservationdata', jsondata);
+                                updatedReservation(fileData);
                             });
+                            $('#delete-event').off('click').on('click', function (event) {
+                                event.preventDefault();
+                                var fileData = new FormData();
+                                var inputStarttDate = document.getElementById("start-date").value;
+                                var inputEndDate = document.getElementById("end-date").value;
+                                var deletereservation = {
+                                    id: info.id,
+                                    title: $("#write-e").val(),
+                                };
+                                var jsondata = JSON.stringify(deletereservation);
+                                fileData.append('deletereservation', jsondata);
+                                swal({
+                                    title: 'Are you sure?',
+                                    text: "You won't be able to revert this!",
+                                    type: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Delete',
+                                    padding: '2em'
+                                }).then(function (result) {
+                                    if (result.value) {
+                                        swal.showLoading();
+                                        $.ajax({
+                                            url: '@Url.Action("DeleteRsv", "Reservation")',
+                                            type: 'POST',
+                                            data: fileData,
+                                            dataType: 'json',
+                                            processData: false,
+                                            contentType: false,
+                                            success: function (data) {
+                                                // admin reserve
+                                                if (data.success) {
+                                                    modal.style.display = "none";
+                                                    modalResetData();
+                                                    document.getElementsByTagName('body')[0].removeAttribute('style');
+                                                    swal(
+                                                        'Deleted!',
+                                                        'Delete Reservation Sucess',
+                                                        'success'
+                                                    ).then(() => {
+                                                        location.reload();
+                                                    });
+                                                    
+                                                }
+                                                else {
+                                                    setPopUp(2000, 'error', data.text, "");
+                                                }
+                                            },
+                                            error: function(){
+                                                swal({
+                                                    title: 'Send Email Fail to client',
+                                                    type: 'error',
+                                                    padding: '2em'
+                                                })
+                                            }
+                                        });
+                                        
+                                    }
+                                })
+                            })
                         }
                     </text>
                 }
@@ -424,16 +544,13 @@
             })
 
             function addDays(date, days) {
-
                 var result = new Date(date);
-
                 result.setDate(result.getDate() + days);
-
                 return result;
 
             }
-            // add Reservation calendar Config
 
+            // add Reservation calendar Config
             function enableDatePicker() {
 
 
@@ -445,11 +562,18 @@
                     minDate: addDays(new Date(), 1),
                     minuteIncrement: 5,
 
-                    defaultHour: "08",
+                    defaultHour: "08:00",
 
-                    minTime: "08", // start business
+                    minTime: "08:00", // start business
 
                     maxTime: "17:00",    // End appointment Time
+                    disable: [
+                        function (date) {
+                            // return true to disable
+                            return (date.getDay() === 0 || date.getDay() === 6);
+
+                        }
+                    ]
 
                 });
 
@@ -469,22 +593,32 @@
                         dateFormat: "Y-m-d H:i",
                         minDate: dateStr,
                         maxDate: dateStr,
-                        minTime: moment(dateStr).add(30, 'm').format('hh:mm'),
+                        minTime: moment(dateStr).add(30, 'm').format('HH:mm'),
 
                         minuteIncrement: 5,
 
-                        maxTime: "18:00"
+                        maxTime: "18:00",
+                        disable: [
+                            function (date) {
+                                // return true to disable
+                                return (date.getDay() === 0 || date.getDay() === 6);
+
+                            }
+                        ]
                     });
 
                 })
                 document.getElementById('end-date-column').style.display = 'none';
             }
+
+            // random id
             function randomString(length, chars) {
                 var result = '';
                 for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
                 return result;
             }
 
+            // check validation
             function checkvalidation() {
             var i = [
                 ($("input[name='marker']:checked").val()),
@@ -502,6 +636,7 @@
             }
             return true;
             };
+
              @if (Request.IsAuthenticated) {
                 <text>
                 // add event button
@@ -523,7 +658,10 @@
 
                         var concatenateStartDateTime = startDate + 'T' + startTime + ':00';
                         var concatenateEndDateTime = endDate + 'T' + endTime + ':00';
-
+                        var adminid = "";
+                        if (window.location.pathname.split('/')[1] == "home" && window.location.pathname.split('/')[2] == "index") {
+                            var adminid = window.location.pathname.split('/')[3];
+                        }
                         var inputDescription = document.getElementById("taskdescription").value;
                          @if (Model.Userdata.Role == "admin")
                          {
@@ -542,7 +680,8 @@
                             className: radioValue,
                             description: inputDescription,
                             extendedProps:{
-                                ClientData: clientdt
+                                ClientData: clientdt,
+                                AdminId: adminid
                             },
                         };
 
@@ -558,21 +697,6 @@
                             success: function (data) {
                                 // admin reserve
                                 if (data.success == "admin") {
-                                    console.log(data.reservationdata)
-                                    var reserve = {
-                                        id: data.reservationdata.Id,
-                                        title: data.reservationdata.Title,
-                                        start: data.reservationdata.Start,
-                                        end: data.reservationdata.End,
-                                        className: data.reservationdata.ClassName,
-                                        description: data.reservationdata.Description,
-                                        extendedProps: {
-                                            ClientData: data.reservationdata.ExtendedProps.ClientData,
-                                            AdminData: data.reservationdata.ExtendedProps.AdminData
-                                        },
-                                    };
-                                    var myCalendar = $('#calendar');
-                                    myCalendar.fullCalendar('renderEvent', reserve, true);
                                     modal.style.display = "none";
                                     modalResetData();
                                     document.getElementsByTagName('body')[0].removeAttribute('style');
@@ -594,6 +718,20 @@
                                 // client reserve
                                 else if (data.success == "client") {
 
+                                    const toast = swal.mixin({
+                                        position: 'center',
+                                        showConfirmButton: false,
+                                        timer: 2000,
+                                        padding: '2em'
+                                    });
+                                    toast({
+                                        type: 'success',
+                                        title: data.text,
+                                        padding: '2em',
+                                    })
+                                        .then(() => {
+                                            location.reload();
+                                        })
                                 }
                                 else {
                                     setPopUp(2000, 'error', 'Reservation Failed', data.text);
@@ -601,12 +739,10 @@
                             },
                             error: function () {
                                 swal({
-                                title: 'Authentication Failed',
-                                text: "Please Login first",
+                                title: 'Reserve Failed',
+                                text: "Please Try Again to Reserve",
                                 type: 'error',
                                 padding: '2em'
-                                }).then(() => {
-                                window.location.href = "/account/login";
                                 })
                             }
                         });
@@ -647,7 +783,6 @@
                 }
             }
             setCurrentDateHighlightStyle();
-
             var fcButtons = document.getElementsByClassName('fc-button');
             for (var i = 0; i < fcButtons.length; i++) {
                 fcButtons[i].addEventListener('click', function () {
@@ -658,7 +793,59 @@
                     setCurrentDateHighlightStyle();
                 })
             }
+
+         @if (Request.IsAuthenticated && Model.Userdata.Role == "admin")
+         {
+             <text>
+            function updatedReservation(fileData) {
+                swal.showLoading();
+                $.ajax({
+                    url: '@Url.Action("UpdateRserv", "Reservation")',
+                    type: 'POST',
+                    data: fileData,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        // admin reserve
+                        if (data.success) {
+                            modal.style.display = "none";
+                            modalResetData();
+                            document.getElementsByTagName('body')[0].removeAttribute('style');
+                            const toast = swal.mixin({
+                                position: 'center',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em'
+                            });
+                            toast({
+                                type: 'success',
+                                title: data.text,
+                                padding: '2em',
+                            })
+                            .then(() => {
+                                location.reload();
+                            })
+                        }
+                        else {
+                            setPopUp(2000, 'error', data.text,"");
+                        }
+                    },
+                    error: function () {
+                        swal({
+                            title: 'Ajax error',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            type: 'error',
+                            padding: '2em'
+                        })
+                    }
+                });
+            }
+            </text>
+         }
         });
+        
     </script>
 </body>
 </html>
