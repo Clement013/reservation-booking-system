@@ -10,6 +10,7 @@ namespace reservation_booking_system.Mail
 {
     public class MailServer
     {
+        // send email
         public static void SendEmail(string email,string sub,string body)
         {
             try
@@ -46,6 +47,7 @@ namespace reservation_booking_system.Mail
                 throw (ex);
             }
         }
+        // send email to client when client do reservation
         public static void ReservationsendClientEmail(Admin admindata,Event eventdata)
         {
             try
@@ -82,6 +84,8 @@ namespace reservation_booking_system.Mail
                 throw (ex);
             }
         }
+        
+        // send email to admin when client do reservation
         public static void ReservationsendadminEmail(Admin admindata, Event eventdata)
         {
             try
@@ -119,6 +123,8 @@ namespace reservation_booking_system.Mail
                 throw (ex);
             }
         }
+
+        // send email to client when admin aproved their reservation
         public static void AproveReservationsendEmail(Admin admindata, Event eventdata)
         {
             try
@@ -156,6 +162,8 @@ namespace reservation_booking_system.Mail
                 throw (ex);
             }
         }
+
+        // send email to client when admin reject their reservation
         public static void CancelReservationsendEmail(Admin admindata, Event eventdata)
         {   
             try

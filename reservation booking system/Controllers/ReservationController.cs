@@ -14,6 +14,7 @@ namespace reservation_booking_system.Controllers
 {
     public class ReservationController : Controller
     {
+        // create reservation data
         [HttpPost]
         [Authorize]
         public JsonResult CreateReservdata()
@@ -21,11 +22,14 @@ namespace reservation_booking_system.Controllers
             FormsIdentity user = (FormsIdentity)User.Identity;
             var struserdata = user.Ticket.UserData;
             var userdata = AccountController.UserDatastr(struserdata);
+            // role admin
             if (userdata.Role == "admin")
             {
                 ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
                 var data = Request.Form["reservationdata"].ToString();
                 ReservationdataView reservationdata = JsonConvert.DeserializeObject<ReservationdataView>(data);
+
+                //convert reservation class name to approval
                 var apr = Aprroval(reservationdata.ClassName);
                 Event events = new Event
                 {
@@ -43,11 +47,13 @@ namespace reservation_booking_system.Controllers
                     UpdatedTime = DateTime.Now.ToString(),
                     Status = 1,
                 };
+                // add data to database
                 reservationSystemDBEntities.Events.Add(events);
                 reservationSystemDBEntities.SaveChanges();
                 
                 return Json(new { success = "admin", text = "Add data success"});
             }
+            // role client
             else if (userdata.Role == "client")
             {
                 ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
@@ -73,6 +79,7 @@ namespace reservation_booking_system.Controllers
                     UpdatedTime = DateTime.Now.ToString(),
                     Status = 1,
                 };
+                // add data to database
                 reservationSystemDBEntities.Events.Add(events);
                 var a = reservationSystemDBEntities.SaveChanges();
 
@@ -83,6 +90,7 @@ namespace reservation_booking_system.Controllers
                 MailServer.ReservationsendadminEmail(admindata, eventdata);
                 return Json(new { success = "client", text = "Reserve sucess" });
             }
+            // if not role admin and client
             else
             {
                 return Json(new { success = false, text = "you don't have permission to access" });
@@ -97,6 +105,7 @@ namespace reservation_booking_system.Controllers
             ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
             List<ReservationdataView> Reservationdt = new List<ReservationdataView>();
             var dbdata = reservationSystemDBEntities.Events.Where(x => x.Status == 1 && x.AdminID == urlid).ToList();
+            // if have data
             if(!(dbdata.Count == 0)){
                 UserData userdata = new UserData();
                 if (Request.IsAuthenticated)
@@ -138,6 +147,7 @@ namespace reservation_booking_system.Controllers
                     
                     foreach (var sub in dbdata)
                     {
+                        // check if date is after today else dont show data
                         DateTime timestamp = DateTime.ParseExact(sub.EndTime, "yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
                         if (DateTime.Now < timestamp)
                         {

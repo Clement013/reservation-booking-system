@@ -17,25 +17,31 @@ namespace reservation_booking_system.Controllers
 {
     public class AccountController : Controller
     {
+        // login page
         public ActionResult Login()
         {
             if (Request.IsAuthenticated)
             {
+                // get the data from  user.Identity
                 FormsIdentity user = (FormsIdentity)User.Identity;
                 var struserdata = user.Ticket.UserData;
-                var userdata = AccountController.UserDatastr(struserdata);
+                var userdata = UserDatastr(struserdata);
+                // if role == admin
                 if (userdata.AccessLevel == 2)
                 {
                     return RedirectToAction("Index","home", new { id = User.Identity.Name });
                 }
+                // role client
                 else
                 {
                     return RedirectToAction("Dashboard", "home");
                 }
             }
-                return View();
+            // Haven't login    
+            return View();
         }
 
+        // login process
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginViewModel model)
@@ -44,6 +50,7 @@ namespace reservation_booking_system.Controllers
             {
                 return View("Index",model);
             }
+
             ReservationSystemDBEntities reservationSystemDBEntities = new ReservationSystemDBEntities();
             var admindata = reservationSystemDBEntities.Admins.Where(x => x.Email == model.Email && x.Status == 1).Select(x => new { x.Name, x.ID,x.HashKey,x.HashedPassword }).FirstOrDefault();
             var clientdata = reservationSystemDBEntities.Clients.Where(x => x.Email == model.Email || x.UserName == model.Email && x.Status == 1).Select(x => new { x.Name,x.UserName, x.ID, x.HashedKey, x.HashedPassword }).FirstOrDefault();
@@ -61,7 +68,7 @@ namespace reservation_booking_system.Controllers
                         Role = "admin",
                         AccessLevel = 2
                     };
-                    var userdata = String.Join(",", userData.Name, userData.Role, userData.AccessLevel);
+                    var userdata = string.Join(",", userData.Name, userData.Role, userData.AccessLevel);
                     FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(
                         1,
                         admindata.ID.ToString(),
@@ -70,6 +77,7 @@ namespace reservation_booking_system.Controllers
                         false,
                         userdata
                         );
+
                     // Encrypt the ticket.
                     string encTicket = FormsAuthentication.Encrypt(ticket);
 
@@ -120,6 +128,7 @@ namespace reservation_booking_system.Controllers
                     return View();
                 }
             }
+            // login fail
             else
             {
                 ModelState.AddModelError("", "Incorrect email or password");
@@ -127,14 +136,15 @@ namespace reservation_booking_system.Controllers
             }
             
         }
+        // register page
         public ActionResult Register()
         {
 
             return View();
         }
 
+        // register process
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterViewModel model)
         {
@@ -158,6 +168,7 @@ namespace reservation_booking_system.Controllers
                     UpdatedTime = DateTime.Now.ToString(),
                     Status = 1
                 };
+                // add data to database
                 reservationSystemDBEntities.Clients.Add(client);
                 reservationSystemDBEntities.SaveChanges();
                 return RedirectToAction("Login");
@@ -169,11 +180,13 @@ namespace reservation_booking_system.Controllers
             }
         }
 
+        // register admin page
         public ActionResult RegisterAdmin() 
         {
             return View();
         }
 
+        // register process for admin
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult RegisterAdmin(RegisterAdViewModel model)
@@ -198,7 +211,7 @@ namespace reservation_booking_system.Controllers
                     Status = 1
                     
                 };
-                
+                // add data to database
                 reservationSystemDBEntities.Admins.Add(admin);
                 reservationSystemDBEntities.SaveChanges();
                 var id = reservationSystemDBEntities.Admins.Where(x => x.Email == model.Email).FirstOrDefault();
@@ -214,6 +227,7 @@ namespace reservation_booking_system.Controllers
             }
         }
 
+        // sign out function
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Logoff()
@@ -227,6 +241,7 @@ namespace reservation_booking_system.Controllers
             return RedirectToAction("Dashboard","Home");
         }
 
+        // remote for validation email is exist or not
         [AcceptVerbs("Get","Post")]
         [AllowAnonymous]
         public JsonResult IsEmailUsed(string email)
@@ -247,6 +262,7 @@ namespace reservation_booking_system.Controllers
             
         }
 
+        // remote for validation username is exist or not
         [AcceptVerbs("Get", "Post")]
         [AllowAnonymous]
         public JsonResult IsUserNameUsed(string username)
@@ -266,6 +282,7 @@ namespace reservation_booking_system.Controllers
 
         }
 
+        // partial view for Header login
         [Authorize]
         public PartialViewResult HeaderLogin()
         {
@@ -275,6 +292,8 @@ namespace reservation_booking_system.Controllers
             //FormsAuthenticationTicket ticket = FormsAuthentication.Decrypt(authCookie.Value);
             return PartialView("_HeaderLogin",userdata);
         }
+
+        // convert the ticket.userdata to usermodel
         public static UserData UserDatastr(string strdata)
         {
             string[] subs = strdata.Split(',');
@@ -287,6 +306,8 @@ namespace reservation_booking_system.Controllers
             };
             return userData;
         }
+
+        // HMAC SHa256 converter
         private static string HMACSHA256(string message, string key)
         {
             var encoding = new System.Text.UTF8Encoding();
@@ -298,6 +319,8 @@ namespace reservation_booking_system.Controllers
                 return BitConverter.ToString(hashMessage).Replace("-", "").ToLower();
             }
         }
+
+        // generate a random string to be a key
         public static string GenerateRandomString(int length, string allowableChars = null)
         {
             if (string.IsNullOrEmpty(allowableChars))
